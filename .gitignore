@@ -4,3 +4,5 @@ __pycache__
 weights/
 traced_model.pt
 .vscode/
+*.mp4
+230818_best.pt

@@ -1,0 +1,1 @@
+python detect_and_track.py --weights 230818_best.pt --conf 0.25 --img-size 1280 --save-txt --save-bbox-dim --save-with-object-id --source DJI_0051.MP4
