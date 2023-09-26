@@ -90,4 +90,4 @@ def process_srt_to_csv(input_file):
 
 
 # 함수 호출 (예시)
-process_srt_to_csv("DJI_0051.srt")
+# process_srt_to_csv("DJI_0051.srt")

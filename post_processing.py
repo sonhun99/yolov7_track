@@ -4,7 +4,7 @@ import re
 from natsort import natsorted
 
 
-def post_process(save_path, output_dir):
+def post_process(save_path, output_dir, srt_path):
     # First line of the file
     flight_info_id = "flight_info_id"
     data_no = "data_no"
@@ -24,7 +24,6 @@ def post_process(save_path, output_dir):
     )
 
     # Read converted srt file
-    srt_path = "DJI_0051.csv"
     srt_df = pd.read_csv(srt_path)
 
     label_dir = os.path.join(output_dir, "labels")
@@ -95,4 +94,4 @@ def post_process(save_path, output_dir):
         f.write(content_txt + "\n")
 
 
-post_process("runs\detect\object_tracking3\DJI_0051", "runs\detect\object_tracking3")
+# post_process("runs\detect\object_tracking3\DJI_0051", "runs\detect\object_tracking3", "DJI_0051.csv")
