@@ -1,6 +1,7 @@
 import re
 import pandas as pd
 import os
+import argparse
 
 
 def process_srt_to_csv(input_file):
@@ -91,3 +92,12 @@ def process_srt_to_csv(input_file):
 
 # 함수 호출 (예시)
 # process_srt_to_csv("DJI_0051.srt")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Convert SRT to CSV")
+    parser.add_argument("input_file", help="Input SRT file path")
+
+    args = parser.parse_args()
+
+    input_file = args.input_file
+    process_srt_to_csv(input_file)

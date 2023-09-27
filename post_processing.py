@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import re
 from natsort import natsorted
+import argparse
 
 
 def post_process(save_path, output_dir, srt_path):
@@ -95,3 +96,17 @@ def post_process(save_path, output_dir, srt_path):
 
 
 # post_process("runs\detect\object_tracking3\DJI_0051", "runs\detect\object_tracking3", "DJI_0051.csv")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Post-process detected objects")
+    parser.add_argument("save_path", help="Save path for output file")
+    parser.add_argument("output_dir", help="Directory containing label files")
+    parser.add_argument("srt_path", help="Path to SRT file")
+
+    args = parser.parse_args()
+
+    save_path = args.save_path
+    output_dir = args.output_dir
+    srt_path = args.srt_path
+
+    post_process(save_path, output_dir, srt_path)
