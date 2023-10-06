@@ -84,18 +84,42 @@ def post_process(save_path, output_dir, srt_path):
         final_content = pd.concat([final_content, content], axis=0, ignore_index=True)
 
     final_content.reset_index(drop=True, inplace=True)
+    final_content.index += 1
+    final_content["bbox"] = (
+        final_content["xmin"].astype(str)
+        + " "
+        + final_content["ymin"].astype(str)
+        + " "
+        + final_content["xmax"].astype(str)
+        + " "
+        + final_content["ymax"].astype(str)
+    )
+    final_content = final_content[
+        [
+            "FrameCnt",
+            "object_id",
+            "1st_category",
+            "2nd_category",
+            "3rd_category",
+            "DateTime",
+            "bbox",
+        ]
+    ]
 
     # Convert final_content to string
-    content_txt = final_content.to_string(
-        index=True, header=False, index_names=False, justify="left"
-    )
+    content_txt = final_content.to_csv(index=True, header=False)
+    content_txt = re.sub(r",", ", ", content_txt)
 
     # Write content to txt file
     with open(save_path + ".txt", "a") as f:
         f.write(content_txt + "\n")
 
 
-# post_process("runs\detect\object_tracking3\DJI_0051", "runs\detect\object_tracking3", "DJI_0051.csv")
+post_process(
+    "runs\detect\object_tracking3\DJI_0051",
+    "runs\detect\object_tracking3",
+    "DJI_0051.csv",
+)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Post-process detected objects")
