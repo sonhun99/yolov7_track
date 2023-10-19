@@ -98,6 +98,7 @@ def detect(save_img=False):
         colored_trk,
         save_bbox_dim,
         save_with_object_id,
+        vid_stride,
     ) = (
         opt.source,
         opt.weights,
@@ -108,6 +109,7 @@ def detect(save_img=False):
         opt.colored_trk,
         opt.save_bbox_dim,
         opt.save_with_object_id,
+        opt.vid_stride,
     )
     save_img = not opt.nosave and not source.endswith(".txt")  # save inference images
     webcam = (
@@ -176,7 +178,9 @@ def detect(save_img=False):
         cudnn.benchmark = True  # set True to speed up constant image size inference
         dataset = LoadStreams(source, img_size=imgsz, stride=stride)
     else:
-        dataset = LoadImages(source, img_size=imgsz, stride=stride)
+        dataset = LoadImages(
+            source, img_size=imgsz, stride=stride, vid_stride=vid_stride
+        )
 
     # Get names and colors
     names = model.module.names if hasattr(model, "module") else model.names
@@ -378,7 +382,7 @@ def detect(save_img=False):
                         if isinstance(vid_writer, cv2.VideoWriter):
                             vid_writer.release()  # release previous video writer
                         if vid_cap:  # video
-                            fps = vid_cap.get(cv2.CAP_PROP_FPS)
+                            fps = vid_cap.get(cv2.CAP_PROP_FPS) / vid_stride
                             w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
                             h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                         else:  # stream
@@ -474,6 +478,12 @@ if __name__ == "__main__":
         "--save-with-object-id",
         action="store_true",
         help="save results with object id to *.txt",
+    )
+    parser.add_argument(
+        "--vid-stride",
+        type=int,
+        default=1,
+        help="video frame stride for detection. Default is 1",
     )
 
     parser.set_defaults(download=True)

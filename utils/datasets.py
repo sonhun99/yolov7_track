@@ -184,7 +184,7 @@ class _RepeatSampler(object):
 
 
 class LoadImages:  # for inference
-    def __init__(self, path, img_size=640, stride=32):
+    def __init__(self, path, img_size=640, stride=32, vid_stride=1):
         p = str(Path(path).absolute())  # os-agnostic absolute path
         if "*" in p:
             files = sorted(glob.glob(p, recursive=True))  # glob
@@ -205,6 +205,7 @@ class LoadImages:  # for inference
         self.nf = ni + nv  # number of files
         self.video_flag = [False] * ni + [True] * nv
         self.mode = "image"
+        self.vid_stride = vid_stride  # video frame-rate stride
         if any(videos):
             self.new_video(videos[0])  # new video
         else:
@@ -226,6 +227,8 @@ class LoadImages:  # for inference
         if self.video_flag[self.count]:
             # Read video
             self.mode = "video"
+            for _ in range(self.vid_stride - 1):
+                self.cap.grab()
             ret_val, img0 = self.cap.read()
             if not ret_val:
                 self.count += 1
@@ -262,7 +265,7 @@ class LoadImages:  # for inference
     def new_video(self, path):
         self.frame = 0
         self.cap = cv2.VideoCapture(path)
-        self.nframes = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.nframes = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT) / self.vid_stride)
 
     def __len__(self):
         return self.nf  # number of files
