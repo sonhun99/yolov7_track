@@ -35,6 +35,9 @@ from utils.download_weights import download
 import skimage
 from sort import *
 
+# For post processing
+from post_processing import post_process
+
 # ............................... Bounding Boxes Drawing ............................
 """Function to Draw Bounding boxes"""
 
@@ -401,6 +404,18 @@ def detect(save_img=False):
         )
         # print(f"Results saved to {save_dir}{s}")
 
+    # Post processing
+    data_no = 0
+    for path in dataset.files:
+        data_no += 1
+        post_process(
+            save_dir=save_dir,
+            original_file_path=path,
+            flight_info_id=opt.name,
+            data_no=data_no,
+            vid_stride=vid_stride,
+        )
+
     print(f"Done. ({time.time() - t0:.3f}s)")
 
 
@@ -482,8 +497,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--vid-stride",
         type=int,
-        default=1,
-        help="video frame stride for detection. Default is 1",
+        default=4,
+        help="video frame stride for detection. Default is 4",
     )
 
     parser.set_defaults(download=True)

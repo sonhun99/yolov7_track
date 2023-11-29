@@ -7,3 +7,5 @@ traced_model.pt
 *.mp4
 230818_best.pt
 test*
+DJI*
+*.pt

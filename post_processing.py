@@ -5,18 +5,22 @@ from natsort import natsorted
 import argparse
 
 
-def post_process(save_path, output_dir, srt_path):
-    # First line of the file
-    flight_info_id = "flight_info_id"
-    data_no = "data_no"
+def post_process(
+    save_dir,
+    original_file_path,
+    flight_info_id,
+    data_no,
+    vid_stride,
+    class_dict_path="class_dictionary.csv",
+):
+    file_name = os.path.basename(original_file_path)
+    txt_path = os.path.join(save_dir, os.path.splitext(file_name)[0] + ".txt")
 
-    with open(save_path + ".txt", "w") as f:
+    with open(txt_path, "w") as f:
         f.write(str(flight_info_id) + ", " + str(data_no) + "\n")
 
-    # Other lines of the file
-
     # Read class dictionary
-    class_df = pd.read_csv("class_dictionary.csv")
+    class_df = pd.read_csv(class_dict_path)
     class_dict = (
         class_df[["yolo_class_no", "1st_category", "2nd_category", "3rd_category"]]
         .set_index("yolo_class_no")
@@ -25,12 +29,18 @@ def post_process(save_path, output_dir, srt_path):
     )
 
     # Read converted srt file
+    srt_path = os.path.splitext(original_file_path)[0] + ".csv"
     srt_df = pd.read_csv(srt_path)
 
-    label_dir = os.path.join(output_dir, "labels")
+    label_dir = os.path.join(save_dir, "labels")
+    label_list = [
+        file
+        for file in os.listdir(label_dir)
+        if re.search(r"^" + os.path.splitext(file_name)[0] + r"_(\d+)\.txt$", file)
+    ]
 
     final_content = pd.DataFrame()
-    for file in natsorted(os.listdir(label_dir)):
+    for file in natsorted(label_list):
         # Read each file
         raw_content = pd.read_csv(os.path.join(label_dir, file), header=None, sep=" ")
         raw_content = raw_content[::-1].reset_index(drop=True)
@@ -46,7 +56,7 @@ def post_process(save_path, output_dir, srt_path):
         ]
 
         # Find frame number
-        FrameCnt = int(re.search(r"(\d+)\.txt$", file).group(1))
+        FrameCnt = vid_stride * (int(re.search(r"(\d+)\.txt$", file).group(1)) - 1) + 1
 
         # Find "DateTime" from "FrameCnt" in srt_df
         DateTime = srt_df[srt_df["FrameCnt"] == FrameCnt]["DateTime"].values[0]
@@ -110,27 +120,60 @@ def post_process(save_path, output_dir, srt_path):
     content_txt = final_content.to_csv(index=True, header=False)
     content_txt = re.sub(r",", ", ", content_txt)
 
+    # erase all \r in content_txt
+    content_txt = re.sub(r"\r", "", content_txt)
+
     # Write content to txt file
-    with open(save_path + ".txt", "a") as f:
+    with open(txt_path, "a") as f:
         f.write(content_txt + "\n")
 
 
-post_process(
-    "runs\detect\object_tracking3\DJI_0051",
-    "runs\detect\object_tracking3",
-    "DJI_0051.csv",
-)
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Post-process detected objects")
-    parser.add_argument("save_path", help="Save path for output file")
-    parser.add_argument("output_dir", help="Directory containing label files")
-    parser.add_argument("srt_path", help="Path to SRT file")
+    parser.add_argument(
+        "--save_dir",
+        type=str,
+        default="",
+        help="Directory where the result is saved",
+    )
+    parser.add_argument(
+        "--original_file_path",
+        type=str,
+        default="",
+        help="Path to the original file",
+    )
+    parser.add_argument(
+        "--flight_info_id",
+        type=str,
+        default="no_id",
+        help="Flight info id",
+    )
+    parser.add_argument(
+        "--data_no",
+        type=int,
+        default=0,
+        help="Data number",
+    )
+    parser.add_argument(
+        "--vid_stride",
+        type=int,
+        default=4,
+        help="Video stride",
+    )
+    parser.add_argument(
+        "--class_dict_path",
+        type=str,
+        default="class_dictionary.csv",
+        help="Path to the class dictionary",
+    )
 
     args = parser.parse_args()
 
-    save_path = args.save_path
-    output_dir = args.output_dir
-    srt_path = args.srt_path
-
-    post_process(save_path, output_dir, srt_path)
+    post_process(
+        args.save_dir,
+        args.original_file_path,
+        args.flight_info_id,
+        args.data_no,
+        args.vid_stride,
+        args.class_dict_path,
+    )

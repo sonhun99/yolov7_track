@@ -227,8 +227,6 @@ class LoadImages:  # for inference
         if self.video_flag[self.count]:
             # Read video
             self.mode = "video"
-            for _ in range(self.vid_stride - 1):
-                self.cap.grab()
             ret_val, img0 = self.cap.read()
             if not ret_val:
                 self.count += 1
@@ -239,6 +237,8 @@ class LoadImages:  # for inference
                     path = self.files[self.count]
                     self.new_video(path)
                     ret_val, img0 = self.cap.read()
+            for _ in range(self.vid_stride - 1):
+                self.cap.grab()
 
             self.frame += 1
             print(
@@ -265,7 +265,7 @@ class LoadImages:  # for inference
     def new_video(self, path):
         self.frame = 0
         self.cap = cv2.VideoCapture(path)
-        self.nframes = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT) / self.vid_stride)
+        self.nframes = math.ceil(self.cap.get(cv2.CAP_PROP_FRAME_COUNT) / self.vid_stride)
 
     def __len__(self):
         return self.nf  # number of files

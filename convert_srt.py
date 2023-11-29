@@ -4,6 +4,18 @@ import os
 import argparse
 
 
+def process_all(input_dir):
+    # 입력 디렉토리 내의 모든 srt 파일을 가져옴
+    srt_files = [
+        os.path.join(input_dir, file)
+        for file in os.listdir(input_dir)
+        if file.endswith(".srt")
+    ]
+
+    for srt_file in srt_files:
+        process_srt_to_csv(srt_file)
+
+
 def process_srt_to_csv(input_file):
     # 입력 파일 이름에서 확장자를 제외한 부분을 가져옴
     base_name = os.path.splitext(os.path.basename(input_file))[0]
@@ -95,9 +107,15 @@ def process_srt_to_csv(input_file):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert SRT to CSV")
-    parser.add_argument("input_file", help="Input SRT file path")
+    parser.add_argument("input", help="Input SRT file path")
 
     args = parser.parse_args()
 
-    input_file = args.input_file
-    process_srt_to_csv(input_file)
+    srt_input = args.input
+    # 파일인지 디렉토리인지 확인하고 처리
+    if os.path.isfile(srt_input):
+        process_srt_to_csv(srt_input)
+    elif os.path.isdir(srt_input):
+        process_all(srt_input)
+    else:
+        print("Invalid input")
