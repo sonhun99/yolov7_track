@@ -22,4 +22,11 @@ call python convert_srt.py %param2%
 
 call python detect_and_track.py --weights 231018_e6e4_best.pt --conf 0.25 --img-size 1280 --vid-stride %stride% --project %param3% --name %param1% --no-trace --save-txt --save-bbox-dim --save-with-object-id --source %param2%
 
+@REM 프로그램이 끝나고 난 후 HTTP POST 요청 보내기
+set "body=%param1%"
+set "url=http://localhost:8888/link/batchYfinish"
+set "contentType=text/plain"
+
+curl -X POST -H "Content-Type: %contentType%" --data-raw "%body%" %url%
+
 pause
