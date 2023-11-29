@@ -402,12 +402,18 @@ def detect(save_img=False):
             if save_txt
             else ""
         )
-        # print(f"Results saved to {save_dir}{s}")
+        print(f"Results saved to {save_dir}{s}")
+        print(f"Tracking Done. ({time.time() - t0:.3f}s)")
 
     # Post processing
     data_no = 0
     for path in dataset.files:
         data_no += 1
+        # print current processing file and total files and path and time
+        print(
+            f"Post Processing ({data_no}/{len(dataset.files)}) : {path} ({time.time() - t0:.3f}s)"
+        )
+
         post_process(
             save_dir=save_dir,
             original_file_path=path,
@@ -416,7 +422,7 @@ def detect(save_img=False):
             vid_stride=vid_stride,
         )
 
-    print(f"Done. ({time.time() - t0:.3f}s)")
+    print(f"All Done. ({time.time() - t0:.3f}s)")
 
 
 if __name__ == "__main__":

@@ -2,10 +2,8 @@ runs/
 */__pycache__/
 __pycache__
 weights/
-traced_model.pt
 .vscode/
 *.mp4
-230818_best.pt
 test*
 DJI*
 *.pt
