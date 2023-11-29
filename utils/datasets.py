@@ -40,6 +40,8 @@ from utils.general import (
 )
 from utils.torch_utils import torch_distributed_zero_first
 
+from natsort import natsorted
+
 # Parameters
 help_url = "https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data"
 img_formats = [
@@ -201,7 +203,7 @@ class LoadImages:  # for inference
 
         self.img_size = img_size
         self.stride = stride
-        self.files = images + videos
+        self.files = natsorted(images + videos)
         self.nf = ni + nv  # number of files
         self.video_flag = [False] * ni + [True] * nv
         self.mode = "image"
