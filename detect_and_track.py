@@ -37,6 +37,7 @@ from sort import *
 
 # For post processing
 from post_processing import post_process
+import shutil
 
 # ............................... Bounding Boxes Drawing ............................
 """Function to Draw Bounding boxes"""
@@ -141,6 +142,11 @@ def detect(save_img=False):
         rand_color = (r, g, b)
         rand_color_list.append(rand_color)
     # ......................................
+
+    output_txt = None
+    if opt.project.endswith(".txt"):
+        output_txt = opt.project
+        opt.project = "runs/detect"
 
     # Directories
     save_dir = Path(
@@ -421,6 +427,16 @@ def detect(save_img=False):
             data_no=data_no,
             vid_stride=vid_stride,
         )
+
+    if data_no == 1:
+        shutil.copy2(list(save_dir.glob("*.txt"))[0], output_txt)
+
+    if data_no >= 2 and output_txt is not None:
+        # merge all txt files to one txt file
+        with open(output_txt, "w") as outfile:
+            for path in dataset.files:
+                with open(str(save_dir / Path(path).stem) + ".txt") as infile:
+                    outfile.write(infile.read())
 
     print(f"All Done. ({time.time() - t0:.3f}s)")
 

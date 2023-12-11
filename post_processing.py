@@ -17,7 +17,10 @@ def post_process(
     txt_path = os.path.join(save_dir, os.path.splitext(file_name)[0] + ".txt")
 
     with open(txt_path, "w") as f:
-        f.write(str(flight_info_id) + ", " + str(data_no) + "\n")
+        f.write("D, " + str(flight_info_id))
+        if data_no >= 2:
+            f.write(", " + str(data_no))
+        f.write("\n")
 
     # Read class dictionary
     class_df = pd.read_csv(class_dict_path)
