@@ -16,6 +16,8 @@ if not defined param4 set param4=5
 
 set /a stride=60 / param4
 
+set "path=C:\Users\Son\anaconda3\Scripts;%path%"
+
 call conda activate yolo
 
 call python convert_srt.py %param2%
