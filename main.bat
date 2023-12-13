@@ -6,7 +6,7 @@ if not defined param1 set param1=default_flight_id
 set param2=%2
 if not defined param2 set param2=.
 
-@REM 결과 저장 폴더 경로
+@REM 결과 저장 파일/폴더 경로
 set param3=%3
 if not defined param3 set param3=runs/detect
 
@@ -16,9 +16,9 @@ if not defined param4 set param4=5
 
 set /a stride=60 / param4
 
-set "path=C:\Users\Son\anaconda3\Scripts;%path%"
+call C:\Users\Son\anaconda3\Scripts\activate.bat yolo
 
-call conda activate yolo
+@echo on
 
 call python convert_srt.py %param2%
 

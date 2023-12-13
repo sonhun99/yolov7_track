@@ -429,9 +429,11 @@ def detect(save_img=False):
         )
 
     if data_no == 1:
+        os.makedirs(os.path.dirname(os.path.abspath(output_txt)), exist_ok=True)
         shutil.copy2(list(save_dir.glob("*.txt"))[0], output_txt)
 
     if data_no >= 2 and output_txt is not None:
+        os.makedirs(os.path.dirname(os.path.abspath(output_txt)), exist_ok=True)
         # merge all txt files to one txt file
         with open(output_txt, "w") as outfile:
             for path in dataset.files:
