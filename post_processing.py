@@ -32,7 +32,7 @@ def post_process(
     )
 
     # Read converted srt file
-    srt_path = os.path.splitext(original_file_path)[0] + ".csv"
+    srt_path = os.path.join("srt_converted", os.path.splitext(file_name)[0] + ".csv")
     srt_df = pd.read_csv(srt_path)
 
     label_dir = os.path.join(save_dir, "labels")

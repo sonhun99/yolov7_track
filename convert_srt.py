@@ -21,7 +21,8 @@ def process_srt_to_csv(input_file):
     base_name = os.path.splitext(os.path.basename(input_file))[0]
 
     # 출력 파일의 경로와 이름을 생성
-    output_file = f"{base_name}.csv"
+    output_file = os.path.join("srt_converted", f"{base_name}.csv")
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
     with open(input_file, "r") as file:
         text = file.read()
